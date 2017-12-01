@@ -1,7 +1,7 @@
 server {
 
     listen 80;
-    server_name openbikes.co;
+    server_name flask.host;
     charset utf-8;
 
     location / {
