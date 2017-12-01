@@ -2,6 +2,16 @@ version: '2'
 
 services:
 
+  # nginx:
+  #   restart: always
+  #   build: ./nginx
+  #   ports:
+  #     - "80:80"
+  #   links:
+  #     - web:web
+  #   depends_on:
+  #     - redis
+
   web:
     build:
       context: ./flask-app
@@ -19,26 +29,21 @@ services:
     depends_on:
       - redis
 
-  monitor:
-    build:
-      context: ./flask-celery
-      dockerfile: Dockerfile
+  flower:
+    image: placr/flower
     ports:
      - "5555:5555"
-    entrypoint: flower
-    command:  -A tasks --port=5555 --broker=redis://redis:6379/0
-    depends_on:
-      - redis
+    links:
+      - redis:redis
 
   redis:
     image: redis
 
-  nginx:
-    restart: always
-    build: ./nginx
-    ports:
-      - "80:80"
+  redis_commander:
+    image: tenstartups/redis-commander
+    container_name: dj_redis_commander
+    command: --redis-host redis
     links:
-      - web:web
-    depends_on:
-      - redis
+      - redis:redis
+    ports:
+      - "8081:8081"
